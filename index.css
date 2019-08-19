@@ -1,0 +1,8 @@
+.activeIcon {
+    color: green;
+    visibility: hidden;
+}
+.active>.activeIcon {
+    visibility: visible;
+}
+
