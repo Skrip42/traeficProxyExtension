@@ -1,21 +1,19 @@
-//var currentHost = "symfony.test.local";
-//var targetUrls = "31.135.34.71";
-
 var activeHost = {
 };
+
+var tabList = {
+}
 
 function isHostActive(host) {
     return typeof activeHost[host] !== 'undefined';
 }
 
 function addHost(fromUrl, toUrl) {
-    console.log('add host ' + fromUrl);
     activeHost[fromUrl] = new hostInstance(fromUrl, toUrl);
     activeHost[fromUrl].appendListeners();
 }
 
 function removeHost(fromUrl) {
-   console.log('remove host ' + fromUrl);
    activeHost[fromUrl].removeListeners();
    delete activeHost[fromUrl];
 }
@@ -24,20 +22,27 @@ var hostInstance = function (fromUrl, toUrl) {
     this.fromUrl = fromUrl;
     this.toUrl = toUrl;
     this.replaceUrl = function (details) {
-        console.log(fromUrl, toUrl, details);
+        tabList[details.tabId] = fromUrl;
+        var protocolPattern = new RegExp('.*:\/\/');
+        var oldUrl = fromUrl.replace(protocolPattern, '');
         return {
-            redirectUrl: details.url.replace(fromUrl, toUrl)
+            redirectUrl: details.url.replace(oldUrl, toUrl)
         }
     };
     this.replaceHeader = function (details) {
-        console.log(fromUrl, toUrl, details);
-        details.requestHeaders.push({ name: "Host", value: fromUrl});
-        return {requestHeaders: details.requestHeaders};
+        if (tabList[details.tabId] == fromUrl) {
+            var protocolPattern = new RegExp('.*:\/\/');
+            var oldUrl = fromUrl.replace(protocolPattern, '');
+            details.requestHeaders.push({ name: "Host", value: oldUrl});
+            return {requestHeaders: details.requestHeaders};
+        } else {
+            return;
+        }
     };
     this.appendListeners = function () {
         chrome.webRequest.onBeforeRequest.addListener(
             this.replaceUrl,
-            {urls: ['*://' + this.fromUrl + '/*']},
+            {urls: [this.fromUrl + '/*']},
             ["blocking"]
         );
         chrome.webRequest.onBeforeSendHeaders.addListener(
@@ -51,24 +56,3 @@ var hostInstance = function (fromUrl, toUrl) {
         chrome.webRequest.onBeforeSendHeaders.removeListener(this.replaceHeader);
     };
 }
-
-//chrome.webRequest.onBeforeRequest.addListener(
-        //function (details) {
-            //console.log(details);
-            //return {
-                //redirectUrl: details.url.replace(currentHost, targetUrls)
-            //}
-        //},
-        //{ urls: ['*://' + currentHost + '/*']},
-        //["blocking"]
-    //);
-
-//chrome.webRequest.onBeforeSendHeaders.addListener(
-    //function (details) {
-        //console.log(details);
-        //details.requestHeaders.push({ name: "Host", value: currentHost});
-        //return {requestHeaders: details.requestHeaders};
-    //},
-    //{urls: ['*://' + targetUrls + '/*']}, 
-    //["blocking", "requestHeaders"]
-//);

@@ -11,7 +11,6 @@ var traeficInstanceList = {
     },
 
     load : function (callback) {
-        console.log('load');
         var self = this;
         chrome.storage.sync.get(
             ['traeficInstances'],
@@ -21,7 +20,6 @@ var traeficInstanceList = {
                     list = [];
                 }
                 self.traeficInstances = list;
-                console.log(list);
                 callback();
             }
         );
@@ -39,9 +37,10 @@ var traeficInstanceList = {
                 var provider = serverResponse[providerName];
                 for (var frontendName in provider.frontends) {
                     var frontend = provider.frontends[frontendName];
+                    var entryPoint = frontend.entryPoints[0]
                     for (var routeName in frontend.routes) {
                         var route = frontend.routes[routeName];
-                        hosts.push(route.rule.replace('Host:', ''));
+                        hosts.push(entryPoint + '://' + route.rule.replace('Host:', ''));
                     }
                 }
             }
@@ -57,16 +56,12 @@ var traeficInstanceList = {
         if (!this.traeficInstances.length) {
             callback(result);
         }
-        console.log(this.traeficInstances);
         for (var i = 0; i < this.traeficInstances.length; i++) {
             this.getHosts(
                 this.traeficInstances[i],
                 function (traeficHost, limit) {
                     return function (hosts) {
                         result[traeficHost] = hosts;
-                        console.log(result);
-                        console.log(limit);
-                        console.log(Object.keys(result).length);
                         if (Object.keys(result).length == limit) {
                             callback(result);
                         }
@@ -76,7 +71,19 @@ var traeficInstanceList = {
         }
     },
 
-    add : function (traeficHost) {
-        this.traeficInstances.push(traeficHost);
+    add : function (traeficHost, callback) {
+        if (this.traeficInstances.indexOf(traeficHost) == -1) {
+            //this.traeficInstances.push(traeficHost);
+            this.getHosts(traeficHost, function (list) {
+                return function () {
+                    list.push(traeficHost);
+                    callback();
+                }
+            } (this.traeficInstances));
+        }
     },
+
+    remove: function (traeficHost) {
+        this.traeficInstances.splice(this.traeficInstances.indexOf(traeficHost), 1);
+    }
 }

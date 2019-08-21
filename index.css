@@ -1,8 +1,83 @@
+* {
+    font-size: 14px;
+    color: rgba(0,0,0,.87);
+    font-feature-settings: "kern","liga";
+    margin: 0px;
+}
+body {
+    font-family: "Roboto","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+#title {
+    background-color: #00bcd4;
+    color: white;
+    padding: 10px 50px;
+    font-size: 20px;
+    white-space: nowrap;
+    box-shadow: 0 0 0.4rem rgba(0,0,0,.1), 0 0.2rem 0.8rem rgba(0,0,0,.2);
+}
+#traeficInstanceContainer {
+    padding: 15px 0px
+}
+#traeficInstanceContainer .material-icons {
+    font-size: 18px;
+}
+.routeLink,.traefikLink,.traefikDelete{
+    float:right;
+}
+.routeName,.activeIcon {
+    float:left;
+}
 .activeIcon {
-    color: green;
+    padding-right: 5px;
+}
+.route {
+    padding: 5px 5px;
+}
+.route:hover {
+    background-color: #e0f3f9;
+}
+.traeficHostTitle {
+    padding: 0px 5px 10px 10px;
+}
+.traefikName {
+    font-size: 16px;
+    float:left;
+}
+#controllPanel {
+    background-color: #00bcd4;
+    color: white;
+    padding: 10px;
+    box-shadow: 0 0 0.4rem rgba(0,0,0,.1), 0 -0.2rem 0.8rem rgba(0,0,0,.2);
+}
+#traeficHostInput{
+    float:left;
+    height: 25px;
+    width: 190px;
+    border-radius: 3px;
+    border: none;
+    padding: 0px 0px 0px 5px;
+    box-shadow: inset 0px 0px 3px 0px rgba(0,0,0,0.5);
+}
+#traeficHostAccept{
+    float:left;
+    padding: 0px 0px 0px 5px;
+}
+#traeficHostAccept>i{
+    color:white
+}
+
+.activeIcon {
     visibility: hidden;
+}
+.activeIcon .material-icons {
+    color: #00bcd4;
 }
 .active>.activeIcon {
     visibility: visible;
 }
 
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both; 
+}
